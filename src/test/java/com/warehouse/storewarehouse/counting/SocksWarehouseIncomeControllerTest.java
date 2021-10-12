@@ -38,9 +38,6 @@ public class SocksWarehouseIncomeControllerTest {
     @Autowired
     private JacksonTester<DeliveryBatchSocks> jsonRequestAttempt;
 
-    @Autowired
-    private JacksonTester<SimpleResponse> jsonResponseAttempt;
-
     @Mock
     private SocksRepository socksRepository;
 
@@ -77,7 +74,7 @@ public class SocksWarehouseIncomeControllerTest {
         //given deliveries with incorrect data
         DeliveryBatchSocks wrongDelivery1 = new DeliveryBatchSocks(null, 10,10);
         DeliveryBatchSocks wrongDelivery2 = new DeliveryBatchSocks("Yellow", -100,10);
-        DeliveryBatchSocks wrongDelivery3 = new DeliveryBatchSocks(null, 20,-37);
+        DeliveryBatchSocks wrongDelivery3 = new DeliveryBatchSocks("Black", 20,-37);
 
 
         MockHttpServletResponse response = mvc.perform(

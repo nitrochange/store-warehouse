@@ -5,5 +5,5 @@ public interface SocksService {
 
     SimpleResponse registerOutcome(DeliveryBatchSocks delivery);
 
-    SocksInfo getInfo();
+    SocksInfo getInfo(String color, String operation, String cottonPart);
 }

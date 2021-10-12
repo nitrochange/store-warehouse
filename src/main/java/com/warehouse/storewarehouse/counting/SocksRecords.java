@@ -20,4 +20,9 @@ public class SocksRecords {
     private String color;
     private int quantity;
     private int cottonPart;
+
+    public SocksRecords(final String color, int quantity, int cottonPart) {
+        this(null, color, quantity, cottonPart);
+    }
+
 }
