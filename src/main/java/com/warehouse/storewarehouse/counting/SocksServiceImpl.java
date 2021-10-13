@@ -39,7 +39,7 @@ public class SocksServiceImpl implements SocksService {
                 delivery.getColor(),
                 delivery.getCottonPart());
 
-        return new SimpleResponse("New delivery successfully registered. New amount: " + (record.getQuantity() + delivery.getQuantity()) + " ." );
+        return new SimpleResponse("New delivery successfully registered. New amount: " + (record.getQuantity() + delivery.getQuantity()) + "." );
     }
 
     /**
@@ -72,7 +72,7 @@ public class SocksServiceImpl implements SocksService {
             throw new RuntimeException(message);
         }
 
-        return new SimpleResponse("New delivery successfully registered. New amount: " + (record.getQuantity() - delivery.getQuantity()) + " ." );
+        return new SimpleResponse("New delivery successfully registered. New amount: " + (record.getQuantity() - delivery.getQuantity()) + "." );
     }
 
     /**
