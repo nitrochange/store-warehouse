@@ -13,15 +13,22 @@ public class SocksServiceImpl implements SocksService {
 
     private final SocksRepository socksRepository;
 
+    /**
+     * Регистрируем поставку в новым товаром, если записи в БД на момент поставки не существует.
+     * Она будет автоматически создана
+     * @param delivery Новая поставка носков
+     * @return Сообщение об успешной поставке с новым количеством товара на складе
+     */
     @Override
     public SimpleResponse registerIncome(DeliveryBatchSocks delivery) {
 
         SocksRecords record = socksRepository
                 .getSocksRecordsByColorAndcottonPart(delivery.getColor(), delivery.getCottonPart())
                 .orElseGet(() -> {
-                    log.info("Creating new socks record with params: Color - {}, Cotton Part - {}",
+                    log.info("Creating new socks record with params: Color - {}, Cotton Part - {}, Quantity - {}",
                             delivery.getColor(),
-                            delivery.getCottonPart());
+                            delivery.getCottonPart(),
+                            delivery.getQuantity());
                     return socksRepository.save(
                       new SocksRecords(delivery.getColor(), 0, delivery.getCottonPart())
                     );
@@ -32,9 +39,14 @@ public class SocksServiceImpl implements SocksService {
                 delivery.getColor(),
                 delivery.getCottonPart());
 
-        return new SimpleResponse("aa");
+        return new SimpleResponse("New delivery successfully registered. New amount: " + (record.getQuantity() + delivery.getQuantity()) + " ." );
     }
 
+    /**
+     * Регистрируем уход товара со склада.
+     * @return Если товара на складе меньше,чем в заявке будет вызвано исключение
+     *         Если товара на складе не существует, будет вызвано исключение
+     */
     @Override
     public SimpleResponse registerOutcome(DeliveryBatchSocks delivery) {
 
@@ -48,11 +60,9 @@ public class SocksServiceImpl implements SocksService {
                 }
         );
 
-        //TODO добавить Math.abs
-
-        if (record.getQuantity() >= delivery.getQuantity()) {
+        if (record.getQuantity() >= Math.abs(delivery.getQuantity())) {
             socksRepository.setNewQuantityForSocksRecord(
-                    record.getQuantity() - delivery.getQuantity(),
+                    record.getQuantity() - Math.abs(delivery.getQuantity()),
                     record.getColor(),
                     record.getCottonPart()
             );
@@ -62,12 +72,29 @@ public class SocksServiceImpl implements SocksService {
             throw new RuntimeException(message);
         }
 
-        return new SimpleResponse("bb");
+        return new SimpleResponse("New delivery successfully registered. New amount: " + (record.getQuantity() - delivery.getQuantity()) + " ." );
     }
 
+    /**
+     * Возвращает количество пар носков по входящим параметрам запроса
+     * @param color цвет носков
+     * @param operation операция, по которой будет формироваться результат
+     * @param cottonPart процент хлопка в носках
+     * @return количество пар, удовлетворяющих условию
+     */
     @Override
     public SocksInfo getInfo(String color, String operation, String cottonPart) {
-        int result = socksRepository.findSocksRecordsByColorEquals(color, Integer.parseInt(cottonPart));
-        return new SocksInfo(result);
+        int result = 0;
+        if (operation.equalsIgnoreCase("equal")) {
+            result = socksRepository.findSocksRecordsByColorEquals(color, Integer.parseInt(cottonPart));
+        } else if (operation.equalsIgnoreCase("lessThan")) {
+            result = socksRepository.findSocksRecordsByColorAndLessThanCottonPart(color, Integer.parseInt(cottonPart));
+        } else if (operation.equalsIgnoreCase("moreThan")){
+            result = socksRepository.findSocksRecordsByColorAndMoreThanCottonPart(color, Integer.parseInt(cottonPart));
+        } else {
+            log.info("Cannot process the request: Param operation must be \"equal\", \"lessThan\" or \"moreThan\"");
+            throw new IllegalArgumentException("Param operation must be \"equal\", \"lessThan\" or \"moreThan\"");
+        }
+        return new SocksInfo(Integer.toString(result));
     }
 }

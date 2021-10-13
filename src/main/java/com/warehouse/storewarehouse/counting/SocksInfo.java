@@ -10,5 +10,5 @@ import lombok.ToString;
 @EqualsAndHashCode
 @AllArgsConstructor
 public class SocksInfo {
-    int count;
+    String count;
 }

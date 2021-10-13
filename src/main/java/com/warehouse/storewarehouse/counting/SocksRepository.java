@@ -20,4 +20,10 @@ public interface SocksRepository extends CrudRepository<SocksRecords,Long> {
 
     @Query("select sum(socks.quantity) from SocksRecords socks where socks.color = ?1 and socks.cottonPart = ?2")
     int findSocksRecordsByColorEquals(String color, int cottonPart);
+
+    @Query("select sum(socks.quantity) from SocksRecords socks where socks.color = ?1 and socks.cottonPart > ?2")
+    int findSocksRecordsByColorAndMoreThanCottonPart(String color, int cottonPart);
+
+    @Query("select sum(socks.quantity) from SocksRecords socks where socks.color = ?1 and socks.cottonPart < ?2")
+    int findSocksRecordsByColorAndLessThanCottonPart(String color, int cottonPart);
 }
