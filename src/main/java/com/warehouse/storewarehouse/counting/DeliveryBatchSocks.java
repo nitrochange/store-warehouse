@@ -10,7 +10,7 @@ import javax.validation.constraints.Positive;
 @Value
 public class DeliveryBatchSocks {
 
-    //@NotBlank
+    @NotBlank
     String color;
     @Min(0) @Max(100)
     Integer cottonPart;
